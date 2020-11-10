@@ -1,5 +1,5 @@
 <template>
-<!--   <v-container style="margin-bottom: 100px">
+  <v-container style="margin-bottom: 100px">
     <v-row v-for="post in posts" :key="post.id" justify="center">
       <v-col cols="12" sm="8">
         <v-card outlined>
@@ -18,7 +18,6 @@
           <v-card-text class="pb-0">
             {{ post.body }}
           </v-card-text>
-
           <v-card-actions class="px-3">
             <div
               style="cursor: pointer;"
@@ -35,7 +34,6 @@
           >
             <v-row>
               <v-col>
-                {{post}}
                 <div>
                   <v-list-item
                     v-for="comment in post.comments"
@@ -68,32 +66,37 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row v-if="loading" justify="center">
-      <v-progress-circular
-        :size="56"
-        color="primary"
-        indeterminate />
-    </v-row>
-  </v-container> -->
-  <div>
-    <Posts />
-  </div>
+    <infinite-loading v-if="posts.length" spinner="spiral" @infinite="getDataOnScroll"></infinite-loading>
+  </v-container>
 </template>
 
 <script>
-import Posts from '../components/Posts'
+import { mapGetters } from 'vuex'
 
 export default {
-  components: {
-    Posts
-  },
-
   data () {
     return {
+      page: 1,
+      postId: null
     }
   },
 
+  created () {
+    this.$store.dispatch('getPosts', { page: this.page, infiniteState: null })
+  },
+
+  computed: {
+    ...mapGetters({ posts: 'getPosts' })
+  },
+
   methods: {
+    getDataOnScroll ($state) {
+      setTimeout(() => {
+        this.page++
+        this.$store.dispatch('getPosts', { page: this.page, infiniteLoadState: $state })
+      }, 500)
+    },
+
     getComments (postId) {
       if (postId) {
         this.$axios.get(`comments?post_id=${postId}`)
@@ -105,10 +108,6 @@ export default {
       } else {
         // this.postId = null
       }
-    },
-
-    goToUser (userId) {
-      this.$router.push(`/user/${userId}`)
     }
   }
 }

@@ -19,7 +19,7 @@
           </v-row>
         </v-container>
       </v-app-bar>
-      <v-container>
+      <v-container fluid>
         <nuxt />
       </v-container>
     </v-main>
