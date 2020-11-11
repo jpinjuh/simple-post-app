@@ -1,6 +1,6 @@
 <template>
   <v-container style="margin-bottom: 100px">
-    <v-row v-for="post in posts" :key="post.id" justify="center">
+    <v-row v-for="(post, index) in posts" :key="index" justify="center">
       <v-col cols="12" sm="8">
         <v-card outlined>
           <v-card-title style="word-break: initial;">
@@ -55,17 +55,20 @@
                       <v-list-item-title class="font-weight-medium">
                         {{ comment.name }}
                       </v-list-item-title>
-                      <div class="text-subtitle-1">
+                      <div
+                        class="text-subtitle-1"
+                        style="line-height: 1.25rem"
+                      >
                         {{ comment.body }}
                       </div>
                     </v-list-item-content>
                   </v-list-item>
                 </div>
                 <div
-                  v-if="post.comments.length >= 20"
+                  v-if="post.comments.length >= 20 && isMoreCommentsExist"
                   class="px-0 px-sm-3 font-weight-medium"
                   style="cursor: pointer"
-                  @click="getComments(post)"
+                  @click="moreComments(post)"
                 >
                   More comments...
                 </div>
@@ -91,7 +94,8 @@ export default {
   data () {
     return {
       page: 1,
-      postId: null
+      postId: null,
+      commentsPage: 1
     }
   },
 
@@ -100,7 +104,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ posts: 'getPosts' })
+    ...mapGetters([
+      'posts',
+      'isMoreCommentsExist'
+    ])
   },
 
   methods: {
@@ -112,7 +119,29 @@ export default {
     },
 
     getComments (post) {
-      this.$store.dispatch('getPostComments', post)
+      const postIndex = this.posts.indexOf(post)
+      this.commentsPage = 1
+
+      if (post.comments) {
+        this.$store.dispatch('emptyPostComments', postIndex)
+      } else {
+        this.$store.dispatch('getPostComments', {
+          post,
+          postIndex,
+          commentsPage: this.commentsPage
+        })
+      }
+    },
+
+    moreComments (post) {
+      const postIndex = this.posts.indexOf(post)
+      this.commentsPage++
+
+      this.$store.dispatch('getPostComments', {
+        post,
+        postIndex,
+        commentsPage: this.commentsPage
+      })
     },
 
     goToUserProfile (userId) {
