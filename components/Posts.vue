@@ -6,9 +6,18 @@
           <v-card-title style="word-break: initial;">
             <div class="d-flex">
               <div class="mr-3">
-                <v-icon color="info" size="48">
-                  mdi-account-circle
-                </v-icon>
+                <v-btn
+                  icon
+                  class="pt-3"
+                  @click="goToUserProfile(post.user_id)"
+                >
+                  <v-icon
+                    color="info"
+                    size="48"
+                  >
+                    mdi-account-circle
+                  </v-icon>
+                </v-btn>
               </div>
               <span>
                 {{ post.title }}
@@ -22,18 +31,17 @@
             <div
               style="cursor: pointer;"
               class="font-weight-medium"
-              @click="getComments(post.id)"
+              @click="getComments(post)"
             >
               Komentari
             </div>
           </v-card-actions>
 
           <v-container
-            v-if="postId === post.id"
             class="pt-0"
           >
-            <v-row>
-              <v-col>
+            <v-row v-if="post.comments">
+              <v-col v-if="post.comments.length > 0">
                 <div>
                   <v-list-item
                     v-for="comment in post.comments"
@@ -54,11 +62,17 @@
                   </v-list-item>
                 </div>
                 <div
+                  v-if="post.comments.length >= 20"
                   class="px-0 px-sm-3 font-weight-medium"
                   style="cursor: pointer"
-                  @click="getComments(post.id)"
+                  @click="getComments(post)"
                 >
                   More comments...
+                </div>
+              </v-col>
+              <v-col v-else>
+                <div class="d-flex justify-center text--disabled">
+                  No comments for this post.
                 </div>
               </v-col>
             </v-row>
@@ -97,17 +111,12 @@ export default {
       }, 500)
     },
 
-    getComments (postId) {
-      if (postId) {
-        this.$axios.get(`comments?post_id=${postId}`)
-          .then((response) => {
-            this.posts[postId].comments = response.data.data
-          }).finally(() => {
-            this.postId = postId
-          })
-      } else {
-        // this.postId = null
-      }
+    getComments (post) {
+      this.$store.dispatch('getPostComments', post)
+    },
+
+    goToUserProfile (userId) {
+      this.$router.push(`/user/${userId}`)
     }
   }
 }
