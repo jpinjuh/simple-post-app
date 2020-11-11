@@ -2,12 +2,22 @@ import Vue from 'vue'
 
 export const state = () => ({
   posts: [],
-  isMoreCommentsExist: true
+  user: {},
+  isMoreCommentsExist: true,
+  loading: true
 })
 
 export const getters = {
   posts (state) {
     return state.posts
+  },
+
+  user (state) {
+    return state.user
+  },
+
+  loading (state) {
+    return state.loading
   },
 
   isMoreCommentsExist (state) {
@@ -49,8 +59,16 @@ export const mutations = {
     Vue.set(state.posts[postIndex], 'comments', null)
   },
 
+  setUser (state, payload) {
+    state.user = payload
+  },
+
   setIsMoreCommentsExist (state, payload) {
     state.isMoreCommentsExist = payload
+  },
+
+  setLoading (state, payload) {
+    state.loading = payload
   }
 }
 
@@ -80,6 +98,18 @@ export const actions = {
         if (total === page) {
           commit('setIsMoreCommentsExist', false)
         }
+      })
+  },
+
+  async getUser ({ commit }, payload) {
+    const url = `users?id=${payload}`
+
+    commit('setLoading', true)
+    await this.$axios.get(url)
+      .then((response) => {
+        commit('setUser', response.data.data[0])
+      }).finally(() => {
+        commit('setLoading', false)
       })
   },
 

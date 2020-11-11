@@ -1,6 +1,19 @@
 <template>
   <v-container>
-    <v-row justify="center" align="center">
+    <v-row
+      v-if="loading"
+      justify="center"
+    >
+      <v-progress-circular
+        indeterminate
+        color="primary"
+      />
+    </v-row>
+    <v-row
+      v-else
+      justify="center"
+      align="center"
+    >
       <v-col cols="10" sm="6">
         <v-card outlined>
           <v-card-title class="d-flex flex-column">
@@ -11,7 +24,7 @@
               class="text-center"
               style="word-break: break-word;"
             >
-              {{ userName }}
+              {{ user.name }}
             </h3>
           </v-card-title>
 
@@ -59,33 +72,25 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   components: {},
 
   data () {
-    return {
-      userListData: {},
-      userName: ''
-    }
+    return {}
   },
 
-  created () {
-    this.getUser()
-  },
+  computed: {
+    ...mapGetters([
+      'user',
+      'loading'
+    ]),
 
-  methods: {
-    getUser () {
-      this.$axios.get(`users?id=${this.$route.params.id}`)
-        .then((response) => {
-          this.optimizeData(response.data.data[0])
-        })
-    },
+    userListData () {
+      const { email, gender, status } = this.user
 
-    optimizeData (data) {
-      const { name, email, gender, status } = data
-
-      this.userName = name
-      this.userListData = [
+      const userListData = [
         {
           name: 'Email',
           value: email,
@@ -102,6 +107,8 @@ export default {
           icon: 'mdi-account-check'
         }
       ]
+
+      return userListData
     }
   }
 }

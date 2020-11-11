@@ -49,7 +49,9 @@
                     class="px-0 px-sm-3"
                   >
                     <v-list-item-avatar class="d-flex align-self-start">
-                      <v-icon size="32">mdi-account-circle</v-icon>
+                      <v-icon size="32">
+                        mdi-account-circle
+                      </v-icon>
                     </v-list-item-avatar>
                     <v-list-item-content>
                       <v-list-item-title class="font-weight-medium">
@@ -83,7 +85,7 @@
         </v-card>
       </v-col>
     </v-row>
-    <infinite-loading v-if="posts.length" spinner="spiral" @infinite="getDataOnScroll"></infinite-loading>
+    <infinite-loading v-if="posts.length" spinner="spiral" @infinite="getDataOnScroll" />
   </v-container>
 </template>
 
@@ -99,15 +101,15 @@ export default {
     }
   },
 
-  created () {
-    this.$store.dispatch('getPosts', { page: this.page, infiniteState: null })
-  },
-
   computed: {
     ...mapGetters([
       'posts',
       'isMoreCommentsExist'
     ])
+  },
+
+  created () {
+    this.$store.dispatch('getPosts', { page: this.page, infiniteState: null })
   },
 
   methods: {
@@ -145,6 +147,7 @@ export default {
     },
 
     goToUserProfile (userId) {
+      this.$store.dispatch('getUser', userId)
       this.$router.push(`/user/${userId}`)
     }
   }
