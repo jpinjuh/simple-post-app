@@ -1,6 +1,10 @@
 <template>
   <v-container style="margin-bottom: 100px">
-    <v-row v-for="(post, index) in posts" :key="index" justify="center">
+    <v-row
+      v-for="(post, index) in posts"
+      :key="index"
+      justify="center"
+    >
       <v-col cols="12" sm="8">
         <v-card outlined>
           <v-card-title style="word-break: initial;">
@@ -37,9 +41,7 @@
             </div>
           </v-card-actions>
 
-          <v-container
-            class="pt-0"
-          >
+          <v-container class="pt-0">
             <v-row v-if="post.comments">
               <v-col v-if="post.comments.length > 0">
                 <div>
@@ -85,7 +87,11 @@
         </v-card>
       </v-col>
     </v-row>
-    <infinite-loading v-if="posts.length" spinner="spiral" @infinite="getDataOnScroll" />
+    <infinite-loading
+      v-if="posts.length"
+      spinner="spiral"
+      @infinite="getDataOnScroll"
+    />
   </v-container>
 </template>
 
